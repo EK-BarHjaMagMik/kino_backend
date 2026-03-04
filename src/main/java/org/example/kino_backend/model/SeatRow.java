@@ -19,7 +19,7 @@ public class SeatRow {
     @JoinColumn(name = "theatre_id")
     private Theatre theatre;
 
-    @OneToMany(mappedBy = "seatRow")
+    @OneToMany(mappedBy = "seatRow", cascade = CascadeType.ALL)
     private Set<Seat> seats = new HashSet<>();
 
     @Column(nullable = false)

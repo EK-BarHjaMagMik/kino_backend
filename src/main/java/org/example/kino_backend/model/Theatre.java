@@ -23,7 +23,7 @@ public class Theatre {
     @JoinColumn(name = "cinema_id")
     private Cinema cinema;
 
-    @OneToMany(mappedBy = "theatre")
+    @OneToMany(mappedBy = "theatre", cascade = CascadeType.ALL)
     private Set<SeatRow> seatRows = new HashSet<>();
 
     @OneToMany(mappedBy = "theatre")

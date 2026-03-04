@@ -30,7 +30,7 @@ public class Reservation {
     private String customerPhone;
     private String customerEmail;
 
-    @OneToMany(mappedBy = "reservation")
+    @OneToMany(mappedBy = "reservation", cascade = CascadeType.ALL)
     private Set<ReservationSeat> reservationSeats = new HashSet<>();
 
     @ManyToOne

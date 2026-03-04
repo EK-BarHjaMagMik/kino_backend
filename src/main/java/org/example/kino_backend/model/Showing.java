@@ -30,6 +30,6 @@ public class Showing {
     @JoinColumn(name = "theatre_id")
     private Theatre theatre;
 
-    @OneToMany(mappedBy = "showing")
+    @OneToMany(mappedBy = "showing", cascade = CascadeType.ALL)
     private Set<Reservation> reservationSet = new HashSet<>();
 }

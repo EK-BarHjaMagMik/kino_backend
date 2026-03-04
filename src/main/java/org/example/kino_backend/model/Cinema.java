@@ -21,7 +21,7 @@ public class Cinema {
     @Column(nullable = false)
     private String address;
 
-    @OneToMany(mappedBy = "cinema")
+    @OneToMany(mappedBy = "cinema", cascade = CascadeType.ALL)
     private Set<Theatre> theatres = new HashSet<>();
 
     @OneToMany(mappedBy = "cinema")
