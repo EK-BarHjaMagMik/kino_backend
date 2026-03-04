@@ -23,7 +23,7 @@ public class Theatre {
     private Cinema cinema;
 
     @OneToMany(mappedBy = "theatre")
-    private Set<Row> rows = new HashSet<>();
+    private Set<SeatRow> seatRows = new HashSet<>();
 
     @OneToMany(mappedBy = "theatre")
     private Set<Showing> showings = new HashSet<>();

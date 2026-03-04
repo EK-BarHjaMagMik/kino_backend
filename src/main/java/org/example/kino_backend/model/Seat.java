@@ -16,8 +16,8 @@ public class Seat {
     private Long seatId;
 
     @ManyToOne
-    @JoinColumn(name = "row_id")
-    private Row row;
+    @JoinColumn(name = "seat_row_id")
+    private SeatRow seatRow;
 
     @OneToMany(mappedBy = "seat")
     private Set<ReservationSeat> reservationSeats = new HashSet<>();

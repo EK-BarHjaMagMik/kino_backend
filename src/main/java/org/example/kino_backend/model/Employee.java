@@ -16,7 +16,7 @@ public class Employee {
     private Long employeeId;
 
     private String username;
-    private String password;
+    private String passwordHash;
 
     @ElementCollection(targetClass = EmployeeRole.class)
     @Enumerated(EnumType.STRING)

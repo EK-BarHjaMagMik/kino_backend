@@ -10,17 +10,17 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-public class Row {
+public class SeatRow {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long rowId;
+    private Long seatRowId;
 
     @ManyToOne
     @JoinColumn(name = "theatre_id")
     private Theatre theatre;
 
-    @OneToMany(mappedBy = "row")
+    @OneToMany(mappedBy = "seatRow")
     private Set<Seat> seats = new HashSet<>();
 
-    private int rowNumber;
+    private int SeatRowNumber;
 }

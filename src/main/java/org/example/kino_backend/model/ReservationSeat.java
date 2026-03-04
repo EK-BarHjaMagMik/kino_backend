@@ -24,6 +24,6 @@ public class ReservationSeat {
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
-    private UUID ticketUUID;
-    private boolean checked_in;
+    private UUID ticketUuid;
+    private boolean checkedIn;
 }
