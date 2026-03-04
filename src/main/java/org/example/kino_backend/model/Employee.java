@@ -15,7 +15,10 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long employeeId;
 
+    @Column(nullable = false)
     private String username;
+
+    @Column(nullable = false)
     private String passwordHash;
 
     @ElementCollection(targetClass = EmployeeRole.class)

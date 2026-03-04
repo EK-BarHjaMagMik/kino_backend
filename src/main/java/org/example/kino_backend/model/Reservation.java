@@ -18,9 +18,11 @@ public class Reservation {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long reservationId;
 
+    @Column(nullable = false)
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ReservationStatus status;
 
     private String referenceNumber;
@@ -38,5 +40,6 @@ public class Reservation {
     @PrePersist
     private void onCreate(){
         this.createdAt = LocalDateTime.now();
+        this.status = ReservationStatus.RESERVED;
     }
 }

@@ -24,7 +24,10 @@ public class ReservationSeat {
     @JoinColumn(name = "seat_id")
     private Seat seat;
 
+    @Column(nullable = false, unique = true)
     private UUID ticketUuid;
+
+    @Column(nullable = false)
     private boolean checkedIn;
 
     @PrePersist

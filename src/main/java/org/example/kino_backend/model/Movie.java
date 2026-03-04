@@ -19,8 +19,12 @@ public class Movie {
     @Enumerated(EnumType.STRING)
     private Set<Category> categories = new HashSet<>();
 
+    @Column(nullable = false)
     private int ageLimit;
+
+    @Column(nullable = false)
     private int duration;
+
     private String description;
 
     @OneToMany(mappedBy = "movie")

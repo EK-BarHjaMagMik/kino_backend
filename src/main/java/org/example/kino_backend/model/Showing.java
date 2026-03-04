@@ -16,7 +16,10 @@ public class Showing {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long showingId;
 
+    @Column(nullable = false)
     private LocalDateTime startTime;
+
+    @Column(nullable = false)
     private double price;
 
     @ManyToOne

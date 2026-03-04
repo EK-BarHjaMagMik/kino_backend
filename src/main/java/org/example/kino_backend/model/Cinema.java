@@ -15,7 +15,10 @@ public class Cinema {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long cinemaId;
 
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String address;
 
     @OneToMany(mappedBy = "cinema")

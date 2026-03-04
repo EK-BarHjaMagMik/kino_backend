@@ -22,5 +22,6 @@ public class SeatRow {
     @OneToMany(mappedBy = "seatRow")
     private Set<Seat> seats = new HashSet<>();
 
+    @Column(nullable = false)
     private int SeatRowNumber;
 }

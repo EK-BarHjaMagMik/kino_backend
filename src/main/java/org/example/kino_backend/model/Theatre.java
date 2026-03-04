@@ -16,6 +16,7 @@ public class Theatre {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long theatreId;
 
+    @Column(nullable = false)
     private int theatreNumber;
 
     @ManyToOne
