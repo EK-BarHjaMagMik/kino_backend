@@ -20,6 +20,9 @@ public class Movie {
     private Set<Category> categories = new HashSet<>();
 
     @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
     private int ageLimit;
 
     @Column(nullable = false)
