@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/seatRows")
+@RequestMapping("/api/seat-rows")
 public class SeatRowController extends CrudRestController<SeatRow, Long> {
 
     public SeatRowController(SeatRowService service) {
