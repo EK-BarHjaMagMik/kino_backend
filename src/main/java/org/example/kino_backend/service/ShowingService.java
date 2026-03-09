@@ -9,9 +9,14 @@ import org.example.kino_backend.repository.ShowingRepository;
 import org.example.kino_backend.repository.TheatreRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
 @Service
 public class ShowingService extends CrudServiceImpl<Showing, Long> {
 
+    private final ShowingRepository showingRepository;
     private final MovieRepository movieRepository;
     private final TheatreRepository theatreRepository;
 
@@ -21,6 +26,7 @@ public class ShowingService extends CrudServiceImpl<Showing, Long> {
             TheatreRepository theatreRepository
     ) {
         super(showingRepository);
+        this.showingRepository = showingRepository;
         this.movieRepository = movieRepository;
         this.theatreRepository = theatreRepository;
     }
@@ -37,6 +43,24 @@ public class ShowingService extends CrudServiceImpl<Showing, Long> {
         // 3. Validate start time
         if (req.startTime() == null) {
             throw new IllegalArgumentException("Start time cannot be null");
+        }
+
+        // 4. Validate no overlap
+        LocalDateTime reqStart = req.startTime();
+        LocalDateTime reqEnd = reqStart.plusMinutes(movie.getDuration());
+
+        List<Showing> showingsInTheatre = showingRepository.findShowingByTheatre(theatre);
+
+        for (Showing showing : showingsInTheatre) {
+            boolean overlaps =
+                    reqStart.isBefore(showing.getEndTime()) &&
+                            reqEnd.isAfter(showing.getStartTime());
+
+            if (overlaps) {
+                throw new IllegalArgumentException(
+                        "Showing overlaps with existing showing starting at " + showing.getStartTime()
+                );
+            }
         }
 
         // 4. Validate price

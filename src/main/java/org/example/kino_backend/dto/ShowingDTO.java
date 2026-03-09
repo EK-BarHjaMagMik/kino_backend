@@ -21,7 +21,7 @@ public record ShowingDTO(
         return new ShowingDTO(
                 showing.getShowingId(),
                 showing.getStartTime(),
-                showing.getStartTime().plusMinutes(movie.getDuration()),
+                showing.getEndTime(),
                 showing.getPrice(),
                 showing.getMovie().getMovieId(),
                 showing.getMovie().getTitle(),
