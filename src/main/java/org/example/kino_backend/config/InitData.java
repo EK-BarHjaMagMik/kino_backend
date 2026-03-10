@@ -1,13 +1,12 @@
 package org.example.kino_backend.config;
 
-import org.example.kino_backend.model.Category;
-import org.example.kino_backend.model.Cinema;
-import org.example.kino_backend.model.Movie;
-import org.example.kino_backend.model.Theatre;
+import org.example.kino_backend.model.*;
 import org.example.kino_backend.repository.CinemaRepository;
+import org.example.kino_backend.repository.EmployeeRepository;
 import org.example.kino_backend.repository.MovieRepository;
 import org.jspecify.annotations.NonNull;
 import org.springframework.boot.CommandLineRunner;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -18,16 +17,19 @@ public class InitData implements CommandLineRunner {
 
     private final CinemaRepository cinemaRepository;
     private final MovieRepository movieRepository;
+    private final EmployeeRepository employeeRepository;
 
-    public InitData(CinemaRepository cinemaRepository, MovieRepository movieRepository) {
+    public InitData(CinemaRepository cinemaRepository, MovieRepository movieRepository, EmployeeRepository employeeRepository) {
         this.cinemaRepository = cinemaRepository;
         this.movieRepository = movieRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     @Override
     public void run(String @NonNull ... args) throws Exception {
         initCinemaWithTheatres();
         initMovies();
+        initAdmin();
     }
 
     public void initCinemaWithTheatres() {
@@ -129,5 +131,22 @@ public class InitData implements CommandLineRunner {
         }
 
         System.out.println("Movie initialization complete.");
+    }
+
+    private void initAdmin() {
+        boolean exists = employeeRepository.existsByUsername("admin");
+
+        if (exists) {
+            System.out.println("Employee 'admin' already exists — skipping init.");
+            return;
+        }
+
+        Employee admin = new Employee();
+        admin.setUsername("admin");
+        BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+        String passwordHash = encoder.encode("admin");
+        admin.setPasswordHash(passwordHash);
+
+        employeeRepository.save(admin);
     }
 }

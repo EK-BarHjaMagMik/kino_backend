@@ -17,6 +17,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
+
     public SecurityConfig(JwtFilter jwtFilter) {
         this.jwtFilter = jwtFilter;
     }
@@ -24,6 +25,7 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                .cors(cors -> {})
                 //csrf protection disabled since we don't use sessions
                 .csrf(csrf -> csrf.disable())
                 //Never create HTTP sessions, all request must bring their own token
@@ -39,7 +41,9 @@ public class SecurityConfig {
 
         return http.build();
     }
+
     @Bean
-    public PasswordEncoder passwordEncoder() {return new BCryptPasswordEncoder();
+    public PasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
     }
 }
