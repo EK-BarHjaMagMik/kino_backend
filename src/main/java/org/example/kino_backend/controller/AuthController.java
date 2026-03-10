@@ -1,41 +1,37 @@
 package org.example.kino_backend.controller;
 
-import org.example.kino_backend.model.Employee;
-import org.example.kino_backend.repository.EmployeeRepository;
+import org.example.kino_backend.dto.LoginRequest;
+import org.example.kino_backend.dto.LoginResponse;
 import org.example.kino_backend.security.JwtUtil;
+import org.example.kino_backend.service.EmployeeService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Map;
-
 @RestController
-@RequestMapping("/api/admin/auth")
+@RequestMapping("/api/auth")
 public class AuthController {
-    private final EmployeeRepository employeeRepository;
+    private final EmployeeService employeeService;
     private final JwtUtil jwtUtil;
-    private final PasswordEncoder passwordEncoder;
 
-    public AuthController(EmployeeRepository employeeRepository, JwtUtil jwtUtil, PasswordEncoder passwordEncoder) {
-        this.employeeRepository = employeeRepository;
+    public AuthController(EmployeeService employeeService, JwtUtil jwtUtil) {
+        this.employeeService = employeeService;
         this.jwtUtil = jwtUtil;
-        this.passwordEncoder = passwordEncoder;
     }
 
-    @RequestMapping("/login")
-    public ResponseEntity<?> login(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
-        String password = request.get("password");
-
-        Employee employee = employeeRepository.findByUsername(username).orElse(null);
-
-        if (employee == null || !passwordEncoder.matches(password, employee.getPasswordHash())) {
-            return ResponseEntity.status(401).body("Invalid credentials");
-        }
-
-        String token = jwtUtil.generateToken(username);
-        return ResponseEntity.ok(Map.of("token", token));
+    @PostMapping("/login")
+    public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+        return employeeService.authenticate(request.username(), request.password())
+                .map(employee -> {
+                    String token = jwtUtil.generateToken(employee.getUsername());
+                    return ResponseEntity.ok(new LoginResponse(token));
+                })
+                .orElseGet(() ->
+                        ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                                .build()
+                );
     }
 }
