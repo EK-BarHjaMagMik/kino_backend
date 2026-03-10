@@ -1,6 +1,7 @@
 package org.example.kino_backend.service;
 
 import org.example.kino_backend.dto.CreateShowingRequest;
+import org.example.kino_backend.dto.UpdateShowingRequest;
 import org.example.kino_backend.model.Movie;
 import org.example.kino_backend.model.Showing;
 import org.example.kino_backend.model.Theatre;
@@ -31,28 +32,76 @@ public class ShowingService extends CrudServiceImpl<Showing, Long> {
     }
 
     public Showing create(CreateShowingRequest req) {
-        // 1. Validate movie
-        Movie movie = movieRepository.findById(req.movieId())
-                .orElseThrow(() -> new IllegalArgumentException("Movie not found: " + req.movieId()));
 
-        // 2. Validate theatre
-        Theatre theatre = theatreRepository.findById(req.theatreId())
-                .orElseThrow(() -> new IllegalArgumentException("Theatre not found: " + req.theatreId()));
+        Movie movie = loadMovie(req.movieId());
+        Theatre theatre = loadTheatre(req.theatreId());
+        validateStartTime(req.startTime());
 
-        // 3. Validate start time
-        if (req.startTime() == null) {
+        LocalDateTime start = req.startTime();
+        LocalDateTime end = calculateEndTime(movie, start);
+
+        validateNoOverlap(theatre, start, end, null);
+        validatePrice(req.price());
+
+        Showing showing = new Showing();
+        showing.setMovie(movie);
+        showing.setTheatre(theatre);
+        showing.setStartTime(start);
+        showing.setEndTime(end);
+        showing.setPrice(req.price());
+
+        return save(showing);
+    }
+
+    public Showing update(Long id, UpdateShowingRequest req) {
+
+        Showing showing = showingRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Showing not found: " + id));
+
+        Movie movie = loadMovie(req.movieId());
+        Theatre theatre = loadTheatre(req.theatreId());
+        validateStartTime(req.startTime());
+
+        LocalDateTime start = req.startTime();
+        LocalDateTime end = calculateEndTime(movie, start);
+
+        validateNoOverlap(theatre, start, end, id);
+        validatePrice(req.price());
+
+        showing.setMovie(movie);
+        showing.setTheatre(theatre);
+        showing.setStartTime(start);
+        showing.setEndTime(end);
+        showing.setPrice(req.price());
+
+        return showingRepository.save(showing);
+    }
+
+    private Movie loadMovie(Long movieId) {
+        return movieRepository.findById(movieId)
+                .orElseThrow(() -> new IllegalArgumentException("Movie not found: " + movieId));
+    }
+
+    private Theatre loadTheatre(Long theatreId) {
+        return theatreRepository.findById(theatreId)
+                .orElseThrow(() -> new IllegalArgumentException("Theatre not found: " + theatreId));
+    }
+
+    private void validateStartTime(LocalDateTime startTime) {
+        if (startTime == null) {
             throw new IllegalArgumentException("Start time cannot be null");
         }
+    }
 
-        // 4. Validate no overlap
-        LocalDateTime reqStart = req.startTime();
-        LocalDateTime reqEnd = reqStart.plusMinutes(movie.getDuration());
+    private LocalDateTime calculateEndTime(Movie movie, LocalDateTime start) {
+        return start.plusMinutes(movie.getDuration());
+    }
 
-        List<Showing> overlaps = showingRepository.findOverlappingShowings(
-                theatre,
-                reqStart,
-                reqEnd
-        );
+    private void validateNoOverlap(Theatre theatre, LocalDateTime start, LocalDateTime end, Long excludeId) {
+        List<Showing> overlaps = showingRepository.findOverlappingShowings(theatre, start, end)
+                .stream()
+                .filter(s -> excludeId == null || !s.getId().equals(excludeId))
+                .toList();
 
         if (!overlaps.isEmpty()) {
             throw new IllegalArgumentException(
@@ -60,21 +109,11 @@ public class ShowingService extends CrudServiceImpl<Showing, Long> {
                             overlaps.get(0).getStartTime()
             );
         }
+    }
 
-        // 4. Validate price
-        if (req.price() < 0) {
+    private void validatePrice(double price) {
+        if (price < 0) {
             throw new IllegalArgumentException("Price must be non-negative");
         }
-
-        // 5. Create entity
-        Showing showing = new Showing();
-        showing.setMovie(movie);
-        showing.setTheatre(theatre);
-        showing.setStartTime(req.startTime());
-        showing.setEndTime(reqEnd);
-        showing.setPrice(req.price());
-
-        // 6. Save
-        return save(showing); // inherited from CrudServiceImpl
     }
 }

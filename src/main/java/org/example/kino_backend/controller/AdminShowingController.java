@@ -2,6 +2,7 @@ package org.example.kino_backend.controller;
 
 import org.example.kino_backend.dto.CreateShowingRequest;
 import org.example.kino_backend.dto.ShowingDTO;
+import org.example.kino_backend.dto.UpdateShowingRequest;
 import org.example.kino_backend.model.Showing;
 import org.example.kino_backend.service.ShowingService;
 import org.springframework.http.HttpStatus;
@@ -26,5 +27,22 @@ public class AdminShowingController {
         ShowingDTO dto = ShowingDTO.fromEntity(showing);
 
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ShowingDTO> update(@PathVariable Long id, @RequestBody UpdateShowingRequest req) {
+        Showing showing = showingService.update(id, req);
+        ShowingDTO dto = ShowingDTO.fromEntity(showing);
+
+        return ResponseEntity.ok(dto);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!showingService.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+        showingService.deleteById(id);
+        return ResponseEntity.noContent().build();
     }
 }
