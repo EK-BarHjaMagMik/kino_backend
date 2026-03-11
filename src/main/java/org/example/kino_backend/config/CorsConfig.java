@@ -16,7 +16,6 @@ public class CorsConfig {
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/api/**")
                         .allowedOrigins(
-                                "*",
                                 "http://localhost", // Nginx via Docker Compose
                                 "http://localhost:63342", //IntelliJ
                                 "http://localhost:3000", // React dev server
