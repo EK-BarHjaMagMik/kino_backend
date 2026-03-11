@@ -40,11 +40,24 @@ public class AdminTheatreController {
         return ResponseEntity.status(HttpStatus.CREATED).body(dto);
     }
 
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<TheatreDTO> update(@PathVariable Long id, @RequestBody UpdateTheatreRequest req) {
         Theatre theatre = theatreService.update(id, req);
         TheatreDTO dto = TheatreDTO.fromEntity(theatre);
 
         return ResponseEntity.ok(dto);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<TheatreDTO> findById(@PathVariable Long id) {
+        return theatreService.findById(id)
+                .map(TheatreDTO::fromEntity)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        theatreService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
