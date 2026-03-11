@@ -15,8 +15,15 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(@NonNull CorsRegistry registry) {
                 registry.addMapping("/api/**")
-                        .allowedOrigins("http://localhost:5500")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE");
+                        .allowedOrigins(
+                                "http://localhost", // Nginx via Docker Compose
+                                "http://localhost:63342", //IntelliJ
+                                "http://localhost:3000", // React dev server
+                                "http://localhost:5500" // VS Code Live Server
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
             }
         };
     }
