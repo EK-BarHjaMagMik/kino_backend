@@ -57,6 +57,10 @@ public class AdminTheatreController {
     
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
+        if (!theatreService.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
         theatreService.delete(id);
         return ResponseEntity.noContent().build();
     }

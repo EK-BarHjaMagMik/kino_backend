@@ -41,6 +41,7 @@ public class TheatreService extends CrudServiceImpl<Theatre, Long> {
 
         validateNoUpcomingShowings(theatre, "update");
 
+        theatre.setTheatreNumber(req.theatreNumber());
         theatre.initializeSeatRows(req.numberOfRows(), req.seatsPerRow());
         return save(theatre);
     }
