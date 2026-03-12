@@ -1,12 +1,14 @@
 package org.example.kino_backend.controller;
 
 
+import org.example.kino_backend.dto.CreateTheatreRequest;
 import org.example.kino_backend.dto.TheatreDTO;
+import org.example.kino_backend.dto.UpdateTheatreRequest;
+import org.example.kino_backend.model.Theatre;
 import org.example.kino_backend.service.TheatreService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -28,5 +30,34 @@ public class AdminTheatreController {
                 .toList();
 
         return ResponseEntity.ok(dtos);
+    }
+
+    @PostMapping
+    public ResponseEntity<TheatreDTO> create(@RequestBody CreateTheatreRequest req) {
+        Theatre theatre = theatreService.create(req);
+        TheatreDTO dto = TheatreDTO.fromEntity(theatre);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(dto);
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<TheatreDTO> update(@PathVariable Long id, @RequestBody UpdateTheatreRequest req) {
+        Theatre theatre = theatreService.update(id, req);
+        TheatreDTO dto = TheatreDTO.fromEntity(theatre);
+
+        return ResponseEntity.ok(dto);
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<TheatreDTO> findById(@PathVariable Long id) {
+        return theatreService.findById(id)
+                .map(TheatreDTO::fromEntity)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        theatreService.delete(id);
+        return ResponseEntity.noContent().build();
     }
 }
