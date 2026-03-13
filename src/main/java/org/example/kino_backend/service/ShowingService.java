@@ -1,8 +1,10 @@
 package org.example.kino_backend.service;
 
 import org.example.kino_backend.dto.CreateShowingRequest;
+import org.example.kino_backend.dto.ShowingSeatDTO;
 import org.example.kino_backend.dto.UpdateShowingRequest;
 import org.example.kino_backend.model.Movie;
+import org.example.kino_backend.model.ReservationStatus;
 import org.example.kino_backend.model.Showing;
 import org.example.kino_backend.model.Theatre;
 import org.example.kino_backend.repository.MovieRepository;
@@ -10,8 +12,11 @@ import org.example.kino_backend.repository.ShowingRepository;
 import org.example.kino_backend.repository.TheatreRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import java.time.LocalDateTime;
 
 @Service
 public class ShowingService extends CrudServiceImpl<Showing, Long> {
@@ -115,5 +120,27 @@ public class ShowingService extends CrudServiceImpl<Showing, Long> {
         if (price < 0) {
             throw new IllegalArgumentException("Price must be non-negative");
         }
+    }
+
+        // Returns all seats for the showing, marking those that are occupied
+    public List<ShowingSeatDTO> getSeatsForShowing(Long showingId){
+        Showing showing = findById(showingId)
+                .orElseThrow(() -> new IllegalArgumentException("Showing not found: " + showingId));
+
+        // Collect IDs of all seats that are taken — ignore cancelled reservations
+        Set<Long> occupiedSeatIds = showing.getReservationSeats().stream()
+                .filter(r -> r.getStatus() != ReservationStatus.CANCELLED)
+                .flatMap(r -> r.getReservationSeats().stream())
+                .map(rs -> rs.getSeat().getSeatId())
+                .collect(Collectors.toSet());
+
+        // Map every seat in the theatre to a DTO, flagging it as occupied
+        // if its ID exists in the occupied set
+        return showing.getTheatre().getSeatRows().stream()
+                .flatMap(row -> row.getSeats().stream())
+                .map(seat -> ShowingSeatDTO.fromEntity(seat, occupiedSeatIds.contains(seat.getSeatId())))
+                .toList();
+
+
     }
 }
