@@ -1,6 +1,7 @@
 package org.example.kino_backend.controller;
 
 import org.example.kino_backend.dto.MovieDTO;
+import org.example.kino_backend.dto.ShowingDTO;
 import org.example.kino_backend.service.MovieService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -25,5 +26,14 @@ public class MovieController {
                 .toList();
 
         return ResponseEntity.ok(dtos);
+    }
+
+    @GetMapping("/{id}/showings")
+    public ResponseEntity<List<ShowingDTO>> getShowings(@PathVariable Long id) {
+        if(!movieService.existsById(id)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(movieService.getShowingsForMovie(id));
     }
 }
