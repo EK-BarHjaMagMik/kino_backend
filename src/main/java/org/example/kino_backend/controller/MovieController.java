@@ -29,7 +29,7 @@ public class MovieController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<MovieDTO> findById(Long id) {
+    public ResponseEntity<MovieDTO> findById(@PathVariable Long id) {
         return movieService.findById(id)
                 .map(MovieDTO::fromEntity)
                 .map(ResponseEntity::ok)
