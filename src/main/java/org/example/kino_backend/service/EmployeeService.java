@@ -34,7 +34,4 @@ public class EmployeeService extends CrudServiceImpl<Employee, Long> {
         return employeeRepository.findByUsername(username)
                 .filter(u -> encoder.matches(rawPassword, u.getPasswordHash()));
     }
-
-    public Employee create(CreateEmployeeRequest req) {
-    }
 }
