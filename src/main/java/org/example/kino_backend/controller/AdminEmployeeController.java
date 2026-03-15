@@ -1,6 +1,7 @@
 package org.example.kino_backend.controller;
 
 import org.example.kino_backend.dto.CreateEmployeeRequest;
+import org.example.kino_backend.dto.UpdateEmployeeRequest;
 import org.example.kino_backend.dto.EmployeeDTO;
 import org.example.kino_backend.model.Employee;
 import org.example.kino_backend.service.EmployeeService;
@@ -36,5 +37,11 @@ public class AdminEmployeeController {
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         employeeService.deleteById(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> update(@PathVariable Long id, @RequestBody UpdateEmployeeRequest req) {
+        Employee employee = employeeService.updateEmployee(id, req);
+        return ResponseEntity.ok(EmployeeDTO.fromEntity(employee));
     }
 }
