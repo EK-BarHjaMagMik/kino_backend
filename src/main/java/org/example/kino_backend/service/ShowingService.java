@@ -105,7 +105,7 @@ public class ShowingService extends CrudServiceImpl<Showing, Long> {
     private void validateNoOverlap(Theatre theatre, LocalDateTime start, LocalDateTime end, Long excludeId) {
         List<Showing> overlaps = showingRepository.findOverlappingShowings(theatre, start, end)
                 .stream()
-                .filter(s -> excludeId == null || !s.getId().equals(excludeId))
+                .filter(s -> excludeId == null || !s.getShowingId().equals(excludeId))
                 .toList();
 
         if (!overlaps.isEmpty()) {
