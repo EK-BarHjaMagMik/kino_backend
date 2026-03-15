@@ -26,6 +26,14 @@ public class AdminEmployeeController {
         return ResponseEntity.ok(employeeDTOS);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<EmployeeDTO> findById(@PathVariable Long id) {
+        return employeeService.findById(id)
+                .map(EmployeeDTO::fromEntity)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
     @PostMapping
     public ResponseEntity<EmployeeDTO> create(@RequestBody CreateEmployeeRequest req) {
         Employee employee = employeeService.createEmployee(req);
